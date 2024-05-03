@@ -1,5 +1,5 @@
-import csv
 import os
+import csv
 import time
 
 import numpy as np
@@ -10,13 +10,13 @@ def get_parameters(net) -> list[np.ndarray]:
     return [p.cpu().detach().numpy() for p in net.parameters()]
 
 
-def set_parameters(net, parameters: list[np.ndarray]):
+def set_parameters(net, parameters: list[np.ndarray]) -> None:
     new_parameters = [torch.tensor(p, dtype=torch.float32) for p in parameters]
     for current_param, new_param in zip(net.parameters(), new_parameters):
         current_param.data = new_param
 
 
-def train(net, trainloader, epochs: int, round: int, device: torch.device):
+def train(net, trainloader, epochs: int, round: int, device: torch.device) -> list:
     """Train the network on the training set."""
     # print("Start train ...")
 
@@ -46,14 +46,13 @@ def train(net, trainloader, epochs: int, round: int, device: torch.device):
             correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
 
         epoch_time = time.time() - start_time
-        epoch_loss /= len(trainloader) 
+        epoch_loss /= len(trainloader)
         epoch_loss = epoch_loss.detach().item()
         # epoch_loss /= len(trainloader.dataset)
         epoch_acc = correct / total
         print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
-        metrics_list.append(
-            [epoch, round, epoch_loss, epoch_acc, 0.0, 0.0, epoch_time]
-        )
+        metrics_list.append([epoch, round, epoch_loss, epoch_acc, 0.0, 0.0, epoch_time])
+        # TODO: save weights here 
 
     return metrics_list
 
